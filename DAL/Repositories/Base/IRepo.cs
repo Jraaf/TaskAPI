@@ -1,4 +1,4 @@
-﻿namespace InternetShcool.DAL.Repository.Base;
+﻿namespace InternetShcool.DAL.Repositories.Base;
 
 public interface IRepo<TEntity, in TKEy>
         where TEntity : class

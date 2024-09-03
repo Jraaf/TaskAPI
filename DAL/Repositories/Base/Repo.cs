@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace InternetShcool.DAL.Repository.Base;
+namespace InternetShcool.DAL.Repositories.Base;
 
 public class Repo<TEntity, TKey> : IRepo<TEntity, TKey>
        where TEntity : class

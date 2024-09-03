@@ -1,5 +1,5 @@
 ﻿using DAL.Entities;
-using InternetShcool.DAL.Repository.Base;
+using InternetShcool.DAL.Repositories.Base;
 
 namespace DAL.Repository.Interfaces;
 
