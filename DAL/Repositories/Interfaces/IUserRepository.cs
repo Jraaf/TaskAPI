@@ -5,4 +5,6 @@ namespace DAL.Repository.Interfaces;
 
 public interface IUserRepository : IRepo<User, Guid>
 {
+    Task<bool> UserExists(string email);
+    Task<User> GetByEmail(string email);
 }
