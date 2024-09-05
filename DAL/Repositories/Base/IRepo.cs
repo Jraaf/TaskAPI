@@ -5,7 +5,7 @@ public interface IRepo<TEntity, in TKEy>
         where TKEy : IEquatable<TKEy>
 {
     Task<List<TEntity>> GetAllAsync();
-    Task<TEntity?> GetAsync(int id);
+    Task<TEntity?> GetAsync(Guid id);
     Task<TEntity> AddAsync(TEntity entity);
     Task<bool> AddManyAsync(IEnumerable<TEntity> entities);
     Task<TEntity> UpdateAsync(TEntity entity);

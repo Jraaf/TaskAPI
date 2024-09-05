@@ -55,7 +55,7 @@ public class Repo<TEntity, TKey> : IRepo<TEntity, TKey>
         return await _table.ToListAsync();
     }
 
-    public async Task<TEntity?> GetAsync(int id)
+    public async Task<TEntity?> GetAsync(Guid id)
     {
         return await _table.FindAsync(id);
     }

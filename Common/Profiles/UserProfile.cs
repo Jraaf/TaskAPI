@@ -4,11 +4,11 @@ using DAL.Entities;
 
 namespace Common.Profiles;
 
-public class UserProfile:Profile
+public class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<CreateUserDTO,User>();
-        CreateMap<User,UserDTO>();
+        CreateMap<CreateUserDTO, User>();
+        CreateMap<User, UserDTO>();
     }
 }
