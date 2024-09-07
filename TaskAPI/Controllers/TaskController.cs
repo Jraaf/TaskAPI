@@ -27,8 +27,6 @@ public class TaskController(ITaskService _service) : ControllerBase
     [HttpGet("GetAll")]
     public async Task<IActionResult> GetAll()
     {
-        var userId = User  .FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
         if (userId == null)
         {
             return Unauthorized();
