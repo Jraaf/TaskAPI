@@ -33,11 +33,11 @@ public class ApplicationDbContext:DbContext
         modelBuilder.Entity<Entities.Task>(entity =>
         {
             entity.Property(e => e.Status)
-                  .HasConversion<string>()
+                  .HasConversion<int>()
                   .IsRequired();
 
             entity.Property(e => e.Priority)
-                  .HasConversion<string>()
+                  .HasConversion<int>()
                   .IsRequired();
 
             entity.Property(e => e.CreatedAt)
