@@ -3,6 +3,7 @@ using Common.DTOs;
 using Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.SqlTypes;
 using System.Security.Claims;
 
 namespace TaskAPI.Controllers;
@@ -15,9 +16,28 @@ public class TaskController(ITaskService _service) : ControllerBase
     [HttpGet("GetOne")]
     public async Task<IActionResult> Get(Guid Id)
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        if (!Guid.TryParse(userId, out var userGuid))
+        {
+            return BadRequest("Invalid user ID format");
+        }
+
         try
         {
-            return Ok(await _service.GetOne(Id));
+            return Ok(await _service.GetOne(Id, userGuid));
+        }
+        catch (ForbiddenActionException e)
+        {
+            return StatusCode(403, e.Message);
+        }
+        catch (NotFoundException e)
+        {
+            return StatusCode(404, e.Message);
         }
         catch (Exception e)
         {
@@ -27,6 +47,8 @@ public class TaskController(ITaskService _service) : ControllerBase
     [HttpGet("GetAll")]
     public async Task<IActionResult> GetAll()
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         if (userId == null)
         {
             return Unauthorized();
@@ -45,12 +67,20 @@ public class TaskController(ITaskService _service) : ControllerBase
             {
                 return NotFound("No tasks found for this user");
             }
-            
+
             return Ok(tasks);
+        }
+        catch (ForbiddenActionException e)
+        {
+            return StatusCode(403, e.Message);
+        }
+        catch (NotFoundException e)
+        {
+            return StatusCode(404, e.Message);
         }
         catch (Exception e)
         {
-            return StatusCode(500, $"Internal server error: {e.Message}");
+            return StatusCode(500, e.Message);
         }
     }
     [HttpPost("Post")]
@@ -101,11 +131,15 @@ public class TaskController(ITaskService _service) : ControllerBase
         {
             return Ok(await _service.Update(dto, Id));
         }
+        catch (ForbiddenActionException e)
+        {
+            return StatusCode(403, e.Message);
+        }
         catch (NotFoundException e)
         {
             return StatusCode(404, e.Message);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             return StatusCode(500, e.Message);
         }
@@ -113,9 +147,25 @@ public class TaskController(ITaskService _service) : ControllerBase
     [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid Id)
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        if (!Guid.TryParse(userId, out var userGuid))
+        {
+            return BadRequest("Invalid user ID format");
+        }
+
         try
         {
-            return Ok(await _service.Delete(Id));
+            return Ok(await _service.Delete(Id, userGuid));
+        }
+        catch (ForbiddenActionException e)
+        {
+            return StatusCode(403, e.Message);
         }
         catch (NotFoundException e)
         {

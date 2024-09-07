@@ -4,6 +4,7 @@ using BLL.Services.Interfaces;
 using Common.DTOs;
 using Common.Exceptions;
 using DAL.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace BLL.Services;
 
@@ -16,14 +17,18 @@ public class TaskService(IMapper _mapper, ITaskRepository _repo) : ITaskService
             await _repo.AddAsync(data));
     }
 
-    public async Task<bool> Delete(Guid id)
+    public async Task<bool> Delete(Guid id, Guid userId)
     {
         var data = await _repo.GetAsync(id);
-        if (data != null)
+        if (data == null)
         {
-            return await _repo.DeleteAsync(data);
+            throw new NotFoundException(id);
         }
-        throw new NotFoundException(id);
+        if (data.UserId != userId)
+        {
+            throw new ForbiddenActionException(id);
+        }
+        return await _repo.DeleteAsync(data);
     }
 
     public async Task<IEnumerable<TaskDTO>> GetAll(Guid userId)
@@ -36,9 +41,19 @@ public class TaskService(IMapper _mapper, ITaskRepository _repo) : ITaskService
         throw new NotFoundException("There are no Tasks");
     }
 
-    public async Task<TaskDTO> GetOne(Guid id)
+    public async Task<TaskDTO> GetOne(Guid id, Guid userId)
     {
         var data = await _repo.GetAsync(id);
+        if (data == null)
+        {
+            throw new NotFoundException(id);
+        }
+
+        if (data.UserId != userId)
+        {
+            throw new ForbiddenActionException(id);
+        }
+        
         return _mapper.Map<TaskDTO>(data);
     }
 
@@ -49,7 +64,7 @@ public class TaskService(IMapper _mapper, ITaskRepository _repo) : ITaskService
 
         if (dto.UserId != entity.UserId)
         {
-            throw new NotFoundException(id);
+            throw new ForbiddenActionException(id);
         }
 
         entity = _mapper.Map(dto, entity);
