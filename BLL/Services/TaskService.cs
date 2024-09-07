@@ -26,9 +26,9 @@ public class TaskService(IMapper _mapper, ITaskRepository _repo) : ITaskService
         throw new NotFoundException(id);
     }
 
-    public async Task<IEnumerable<TaskDTO>> GetAll()
+    public async Task<IEnumerable<TaskDTO>> GetAll(Guid userId)
     {
-        var data = await _repo.GetAllAsync();
+        var data = await _repo.GetAllByUser(userId);
         if (data != null)
         {
             return _mapper.Map<List<DAL.Entities.Task>, List<TaskDTO>>(data);
@@ -46,8 +46,15 @@ public class TaskService(IMapper _mapper, ITaskRepository _repo) : ITaskService
     {
         var entity = await _repo.GetAsync(id)
                 ?? throw new NotFoundException(id);
-        
-        _mapper.Map(dto, entity);
+
+        if (dto.UserId != entity.UserId)
+        {
+            throw new NotFoundException(id);
+        }
+
+        entity = _mapper.Map(dto, entity);
+
+        entity.UpdatedAt = DateTime.Now;
 
         await _repo.UpdateAsync(entity);
 

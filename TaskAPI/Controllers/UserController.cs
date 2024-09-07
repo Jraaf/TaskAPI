@@ -4,36 +4,35 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TaskAPI.Controllers
+namespace TaskAPI.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[AllowAnonymous]
+public class UserController(IUserService _service) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [AllowAnonymous]
-    public class UserController(IUserService _service) : ControllerBase
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(CreateUserDTO dto)
     {
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(CreateUserDTO dto)
+        try
         {
-            try
-            {
-                return Ok(await _service.Register(dto));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Ok(await _service.Register(dto));
         }
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(CreateUserDTO dto)
+        catch (Exception)
         {
-            try
-            {
-                return Ok(await _service.Login(dto));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            throw;
+        }
+    }
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(CreateUserDTO dto)
+    {
+        try
+        {
+            return Ok(await _service.Login(dto));
+        }
+        catch (Exception)
+        {
+            throw;
         }
     }
 }
