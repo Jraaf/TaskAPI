@@ -3,6 +3,8 @@ using AutoMapper.Configuration.Annotations;
 using BLL.Services.Interfaces;
 using Common.DTOs;
 using Common.Exceptions;
+using DAL.Entities;
+using DAL.Repository;
 using DAL.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
@@ -31,9 +33,13 @@ public class TaskService(IMapper _mapper, ITaskRepository _repo) : ITaskService
         return await _repo.DeleteAsync(data);
     }
 
-    public async Task<IEnumerable<TaskDTO>> GetAll(Guid userId, int? page, int? perPage)
+    public async Task<IEnumerable<TaskDTO>> GetAll(Guid userId,
+        int? page, int? perPage,
+        Status? status, DateTime? dueDate, Priority? priority,
+        SortingOptions options)
     {
-        var data = await _repo.GetAllByUser(userId, page, perPage);
+        var data = await _repo.GetAllByUser(userId, page, perPage,
+            status, dueDate, priority, options);
         if (data != null)
         {
             return _mapper.Map<List<DAL.Entities.Task>, List<TaskDTO>>(data);

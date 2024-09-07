@@ -7,5 +7,6 @@ public interface ITaskRepository : IRepo<Entities.Task, Guid>
 {
     Task<List<Entities.Task>> GetAllByUser(Guid userId, 
         int? page, int? perPage,
-        Status? status, DateTime? dueDate, Priority? priority);
+        Status? status, DateTime? dueDate, Priority? priority,
+        SortingOptions options);
 }

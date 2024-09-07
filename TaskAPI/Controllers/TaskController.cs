@@ -1,6 +1,8 @@
 ﻿using BLL.Services.Interfaces;
 using Common.DTOs;
 using Common.Exceptions;
+using DAL.Entities;
+using DAL.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlTypes;
@@ -45,7 +47,11 @@ public class TaskController(ITaskService _service) : ControllerBase
         }
     }
     [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAll(int? page, int? perPage)
+    public async Task<IActionResult> GetAll(int? page, int? perPage,
+        [FromQuery] Status? status,
+        [FromQuery] DateTime? dueDate,
+        [FromQuery] Priority? priority,
+        [FromQuery] SortingOptions options)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -61,7 +67,8 @@ public class TaskController(ITaskService _service) : ControllerBase
 
         try
         {
-            var tasks = await _service.GetAll(userGuid, page, perPage);
+            var tasks = await _service.GetAll(userGuid, page, perPage,
+                status, dueDate, priority, options);
 
             if (tasks == null || !tasks.Any())
             {

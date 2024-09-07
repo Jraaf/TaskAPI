@@ -18,13 +18,45 @@ public class TaskRepository : Repo<Entities.Task, Guid>, ITaskRepository
 
     public async Task<List<Entities.Task>> GetAllByUser(Guid userId,
         int? page, int? perPage,
-        Status? status, DateTime? dueDate, Priority? priority)
+        Status? status, DateTime? dueDate, Priority? priority,
+        SortingOptions? options)
     {
         var data = _context.Tasks
                     .Where(t => t.UserId == userId);
 
-        if (page != null && perPage != null
-            && page > 0 && perPage > 0)
+        if (status != null)
+        {
+            data = data.Where(t => t.Status == status);
+        }
+
+        if (dueDate != null)
+        {
+            data = data.Where(t => t.DueDate == dueDate);
+        }
+
+        if (priority != null)
+        {
+            data = data.Where(t => t.Priority == priority);
+        }
+
+        if (options != null)
+        {
+            if (options.SortByPriority)
+            {
+                data = options.ByAscending
+                    ? data.OrderBy(t => (int)t.Priority)
+                    : data.OrderByDescending(t => (int)t.Priority);
+            }
+            else
+            {
+                data = options.ByAscending
+                    ? data.OrderBy(t => t.DueDate)
+                    : data.OrderByDescending(t => t.DueDate);
+            }
+        }
+
+        // Pagination comes after filtering and sorting
+        if (page != null && perPage != null && page > 0 && perPage > 0)
         {
             var skip = (page.Value - 1) * perPage.Value;
 
@@ -32,22 +64,13 @@ public class TaskRepository : Repo<Entities.Task, Guid>, ITaskRepository
                        .Take(perPage.Value);
         }
 
-        if (status != null)
-        {
-            data.Where(t => t.Status == status);
-        }
-
-        if (dueDate != null)
-        {
-            data.Where(t => t.DueDate == dueDate);
-        }
-
-        if (priority != null)
-        {
-            data.Where(t => t.Priority == priority);
-        }
-
-
         return await data.ToListAsync();
     }
+
+
+}
+public record SortingOptions
+{
+    public bool SortByPriority { get; set; }  // true: sort by priority, false: sort by due date
+    public bool ByAscending { get; set; }     // true: ascending, false: descending
 }
