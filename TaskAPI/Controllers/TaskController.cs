@@ -45,7 +45,7 @@ public class TaskController(ITaskService _service) : ControllerBase
         }
     }
     [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(int? page, int? perPage)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -61,7 +61,7 @@ public class TaskController(ITaskService _service) : ControllerBase
 
         try
         {
-            var tasks = await _service.GetAll(userGuid);
+            var tasks = await _service.GetAll(userGuid, page, perPage);
 
             if (tasks == null || !tasks.Any())
             {

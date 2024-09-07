@@ -4,7 +4,7 @@ namespace BLL.Services.Interfaces;
 
 public interface ITaskService
 {
-    Task<IEnumerable<TaskDTO>> GetAll(Guid UserId);
+    Task<IEnumerable<TaskDTO>> GetAll(Guid UserId, int? page, int? perPage);
     Task<TaskDTO> GetOne(Guid id, Guid userId);
     Task<bool> Delete(Guid id, Guid userId);
     Task<TaskDTO> Add(CreateTaskDTO dto);

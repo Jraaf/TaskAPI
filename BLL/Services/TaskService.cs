@@ -31,9 +31,9 @@ public class TaskService(IMapper _mapper, ITaskRepository _repo) : ITaskService
         return await _repo.DeleteAsync(data);
     }
 
-    public async Task<IEnumerable<TaskDTO>> GetAll(Guid userId)
+    public async Task<IEnumerable<TaskDTO>> GetAll(Guid userId, int? page, int? perPage)
     {
-        var data = await _repo.GetAllByUser(userId);
+        var data = await _repo.GetAllByUser(userId, page, perPage);
         if (data != null)
         {
             return _mapper.Map<List<DAL.Entities.Task>, List<TaskDTO>>(data);
@@ -53,7 +53,7 @@ public class TaskService(IMapper _mapper, ITaskRepository _repo) : ITaskService
         {
             throw new ForbiddenActionException(id);
         }
-        
+
         return _mapper.Map<TaskDTO>(data);
     }
 

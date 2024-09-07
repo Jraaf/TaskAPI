@@ -4,5 +4,5 @@ namespace DAL.Repository.Interfaces;
 
 public interface ITaskRepository : IRepo<Entities.Task, Guid>
 {
-    Task<List<Entities.Task>> GetAllByUser(Guid userId);
+    Task<List<Entities.Task>> GetAllByUser(Guid userId, int? page, int? perPage);
 }
